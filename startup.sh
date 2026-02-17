@@ -6,6 +6,8 @@ echo "🚀 Starting trueclaw bootstrap..."
 # Update system
 apt-get update
 
+apt install build-essential g++ clang cmake -y
+
 # # Install common tools
 # dnf install -y \
 #   git \
