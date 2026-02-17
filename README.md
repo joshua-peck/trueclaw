@@ -15,20 +15,32 @@ Terraform configuration to deploy claw-like instances on Google Cloud Platform.
 
 ### 1.1 Create a GCP Project
 
-1. Go to [console.cloud.google.com](https://console.cloud.google.com)
-2. Click the project dropdown (top left) → **New Project**
-3. Name it `trueclaw` (or your preference)
-4. Note your **Project ID** (it'll be something like `trueclaw-12345`)
+Authenticate first if you haven't already: `gcloud auth login`
+
+```bash
+# Create a new project (project ID must be globally unique; use letters, numbers, hyphens)
+gcloud projects create trueclaw-$(date +%s) --name="trueclaw"
+
+# Or pick your own ID
+gcloud projects create YOUR_PROJECT_ID --name="trueclaw"
+
+# List projects to confirm
+gcloud projects list
+```
+
+Use the **Project ID** from the output for the steps below.
 
 ### 1.2 Enable Compute Engine API
 
 ```bash
-# Set your project
+# Set your project (global for your user; affects all terminals)
 gcloud config set project YOUR_PROJECT_ID
 
 # Enable Compute Engine
-gcloud services enable compute.googleapis.com
+gcloud services enable compute.googleapis.com --project=YOUR_PROJECT_ID
 ```
+
+> **Working with multiple projects?** Use `--project=YOUR_PROJECT_ID` on individual commands, or `export CLOUDSDK_CORE_PROJECT=YOUR_PROJECT_ID` in a terminal to scope that shell only.
 
 ### 1.3 Authenticate with GCP
 
@@ -43,8 +55,8 @@ gcloud auth activate-service-account --key-file=/path/to/key.json
 ### 1.4 Set Default Region/Zone
 
 ```bash
-gcloud config set compute/region us-central1
-gcloud config set compute/zone us-central1-a
+gcloud config set compute/region us-central1 --project=YOUR_PROJECT_ID
+gcloud config set compute/zone us-central1-a --project=YOUR_PROJECT_ID
 ```
 
 ---
@@ -69,7 +81,7 @@ chmod 600 ~/.ssh/gcp_trueclaw
 
 ```bash
 # Add your public key to GCP metadata
-gcloud compute config-ssh --ssh-key-file=~/.ssh/gcp_trueclaw
+gcloud compute config-ssh --ssh-key-file=~/.ssh/gcp_trueclaw --project=YOUR_PROJECT_ID
 ```
 
 This adds your public key to project metadata, allowing SSH to any instance in the project.
@@ -290,7 +302,7 @@ If you need additional ports, edit `main.tf` and re-run `terraform apply`.
 ### View Instance Status
 
 ```bash
-gcloud compute instances list
+gcloud compute instances list --project=YOUR_PROJECT_ID
 ```
 
 ### SSH Into Instance
@@ -303,7 +315,7 @@ ssh -i ~/.ssh/gcp_trueclaw debian@YOUR_INSTANCE_IP
 
 ```bash
 # Instance logs
-gcloud compute instances get-serial-port-output trueclaw-instance --zone us-central1-a
+gcloud compute instances get-serial-port-output trueclaw-instance --zone us-central1-a --project=YOUR_PROJECT_ID
 
 # Application logs (PM2)
 pm2 logs trueclaw
@@ -345,10 +357,10 @@ ssh trueclaw
 
 ```bash
 # Check if instance is running
-gcloud compute instances list
+gcloud compute instances list --project=YOUR_PROJECT_ID
 
 # Check firewall rules
-gcloud compute firewall-rules list
+gcloud compute firewall-rules list --project=YOUR_PROJECT_ID
 
 # Test connectivity
 ping YOUR_INSTANCE_IP
@@ -368,7 +380,7 @@ terraform apply -var="project=your-project" -verbose
 
 ```bash
 # Check serial port output for errors
-gcloud compute instances get-serial-port-output trueclaw-instance --zone us-central1-a
+gcloud compute instances get-serial-port-output trueclaw-instance --zone us-central1-a --project=YOUR_PROJECT_ID
 ```
 
 ### Out of Disk Space
@@ -395,7 +407,7 @@ terraform destroy
 This terminates the instance and deletes all firewall rules. Your static IP (if reserved) will need to be deleted separately:
 
 ```bash
-gcloud compute addresses delete trueclaw-ip --region us-central1
+gcloud compute addresses delete trueclaw-ip --region us-central1 --project=YOUR_PROJECT_ID
 ```
 
 ---
@@ -453,7 +465,7 @@ The Terraform already includes basic monitoring. To view:
 | SSH to instance | `ssh -i ~/.ssh/gcp_trueclaw debian@IP` |
 | Restart trueclaw | `pm2 restart trueclaw` |
 | View logs | `pm2 logs trueclaw` |
-| Check instance | `gcloud compute instances list` |
+| Check instance | `gcloud compute instances list --project=YOUR_PROJECT_ID` |
 
 ---
 
