@@ -6,10 +6,6 @@ terraform {
       source  = "hashicorp/google"
       version = "~> 5.0"
     }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = "~> 5.0"
-    }
   }
 }
 
@@ -150,7 +146,9 @@ resource "google_compute_instance" "trueclaw" {
 
   metadata = {
     startup-script = file("${path.module}/startup.sh")
-  }
+    # Add SSH keys like this:
+    # ssh-keys = "username:ssh-ed25519 AAAA..."
+    }
 
   labels = {
     environment = "production"
@@ -158,9 +156,9 @@ resource "google_compute_instance" "trueclaw" {
   }
 
   # Allow SSH via metadata (project-wide)
-  metadata_keys = {
-    # You can add SSH keys here if needed
-  }
+  # metadata_keys = {
+  #   # You can add SSH keys here if needed
+  # }
 
   # Schedule deletion protection (optional)
   # can_ip_forward = false
