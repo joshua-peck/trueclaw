@@ -19,7 +19,7 @@ variable "zone" {
 variable "instance_type" {
   description = "GCP machine type (e3 family)"
   type        = string
-  default     = "e3-standard-4"  # 4 vCPU, 16 GB RAM - good for Node.js APIs
+  default     = "e2-standard-4"  # 4 vCPU / 16 GB setup
 }
 
 variable "project_name" {
