@@ -25,7 +25,7 @@ variable "instance_type" {
 variable "project_name" {
   description = "Name for tagging resources"
   type        = string
-  default     = "openclaw"
+  default     = "trueclaw"
 }
 
 variable "disk_size_gb" {

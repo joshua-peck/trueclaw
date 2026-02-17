@@ -50,11 +50,11 @@ resource "google_compute_firewall" "allow_ssh" {
 
   source_ranges = [var.ssh_source_ip]
 
-  target_tags = ["openclaw"]
+  target_tags = ["trueclaw"]
 }
 
 # -------------------
-# Firewall Rule - Allow HTTP/HTTPS (if OpenClaw serves web)
+# Firewall Rule - Allow HTTP/HTTPS (if trueclaw serves web)
 # -------------------
 resource "google_compute_firewall" "allow_http_https" {
   name        = "${var.project_name}-allow-http-https"
@@ -68,7 +68,7 @@ resource "google_compute_firewall" "allow_http_https" {
 
   source_ranges = ["0.0.0.0/0"]
 
-  target_tags = ["openclaw"]
+  target_tags = ["trueclaw"]
 }
 
 # -------------------
@@ -88,41 +88,41 @@ resource "google_compute_firewall" "allow_internal" {
     ports    = ["0-65535"]
   }
 
-  source_tags = ["openclaw"]
-  target_tags = ["openclaw"]
+  source_tags = ["trueclaw"]
+  target_tags = ["trueclaw"]
 }
 
 # -------------------
 # Service Account for the Instance
 # -------------------
-resource "google_service_account" "openclaw_sa" {
+resource "google_service_account" "trueclaw_sa" {
   account_id   = "${var.project_name}-sa"
-  display_name = "OpenClaw Service Account"
-  description  = "Service account for OpenClaw compute instance"
+  display_name = "trueclaw Service Account"
+  description  = "Service account for trueclaw compute instance"
 }
 
 # Add IAM roles (adjust as needed)
 resource "google_project_iam_member" "sa_cloud_logging" {
   project = var.project
   role    = "roles/logging.logWriter"
-  member  = "serviceAccount:${google_service_account.openclaw_sa.email}"
+  member  = "serviceAccount:${google_service_account.trueclaw_sa.email}"
 }
 
 resource "google_project_iam_member" "sa_monitoring" {
   project = var.project
   role    = "roles/monitoring.metricWriter"
-  member  = "serviceAccount:${google_service_account.openclaw_sa.email}"
+  member  = "serviceAccount:${google_service_account.trueclaw_sa.email}"
 }
 
 # -------------------
 # Compute Engine Instance
 # -------------------
-resource "google_compute_instance" "openclaw" {
+resource "google_compute_instance" "trueclaw" {
   name         = "${var.project_name}-instance"
   machine_type = var.instance_type
   zone         = var.zone
 
-  tags = ["openclaw"]
+  tags = ["trueclaw"]
 
   boot_disk {
     initialize_params {
@@ -140,7 +140,7 @@ resource "google_compute_instance" "openclaw" {
   }
 
   service_account {
-    email  = google_service_account.openclaw_sa.email
+    email  = google_service_account.trueclaw_sa.email
     scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/logging.write",
@@ -154,7 +154,7 @@ resource "google_compute_instance" "openclaw" {
 
   labels = {
     environment = "production"
-    app         = "openclaw"
+    app         = "trueclaw"
   }
 
   # Allow SSH via metadata (project-wide)
@@ -173,17 +173,17 @@ resource "google_compute_instance" "openclaw" {
 # Outputs
 # -------------------
 output "instance_ip" {
-  value = google_compute_instance.openclaw.network_interface[0].access_config[0].nat_ip
+  value = google_compute_instance.trueclaw.network_interface[0].access_config[0].nat_ip
 }
 
 output "instance_name" {
-  value = google_compute_instance.openclaw.name
+  value = google_compute_instance.trueclaw.name
 }
 
 output "instance_zone" {
-  value = google_compute_instance.openclaw.zone
+  value = google_compute_instance.trueclaw.zone
 }
 
 output "ssh_command" {
-  value = "ssh -i <your-private-key> ${var.project_name}@${google_compute_instance.openclaw.network_interface[0].access_config[0].nat_ip}"
+  value = "ssh -i <your-private-key> ${var.project_name}@${google_compute_instance.trueclaw.network_interface[0].access_config[0].nat_ip}"
 }

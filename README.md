@@ -1,33 +1,15 @@
 # CLAW GCP Infrastructure
 
-A complete Terraform configuration for deploying OpenClaw on Google Cloud Platform. Optimized for Node.js workloads with the e3 machine family.
+Terraform configuration to deploy claw-like instances on Google Cloud Platform.
 
 ## Prerequisites
 
 ### Tools You Need on macOS
+* homebrew
+* terraform
+* google-cloud-sdk
+* git
 
-```bash
-# Install Homebrew (if you haven't already)
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-# Install required tools
-brew install \
-  terraform \
-  google-cloud-sdk \
-  gh \
-  git
-```
-
-### Verify Installations
-
-```bash
-terraform --version
-gcloud --version
-git --version
-gh --version
-```
-
----
 
 ## Step 1: Google Cloud Platform Setup
 
@@ -35,8 +17,8 @@ gh --version
 
 1. Go to [console.cloud.google.com](https://console.cloud.google.com)
 2. Click the project dropdown (top left) → **New Project**
-3. Name it `openclaw` (or your preference)
-4. Note your **Project ID** (it'll be something like `openclaw-12345`)
+3. Name it `trueclaw` (or your preference)
+4. Note your **Project ID** (it'll be something like `trueclaw-12345`)
 
 ### 1.2 Enable Compute Engine API
 
@@ -77,28 +59,28 @@ mkdir -p ~/.ssh
 chmod 700 ~/.ssh
 
 # Generate SSH key (choose a strong passphrase)
-ssh-keygen -t ed25519 -C "openclaw@gcp" -f ~/.ssh/gcp_openclaw
+ssh-keygen -t ed25519 -C "trueclaw@gcp" -f ~/.ssh/gcp_trueclaw
 
 # Secure the key
-chmod 600 ~/.ssh/gcp_openclaw
+chmod 600 ~/.ssh/gcp_trueclaw
 ```
 
 ### 2.2 Add SSH Key to GCP Project
 
 ```bash
 # Add your public key to GCP metadata
-gcloud compute config-ssh --ssh-key-file=~/.ssh/gcp_openclaw
+gcloud compute config-ssh --ssh-key-file=~/.ssh/gcp_trueclaw
 ```
 
 This adds your public key to project metadata, allowing SSH to any instance in the project.
 
 ### 2.3 (Optional) Add SSH Key to GitHub
 
-If your OpenClaw repo is private:
+If your trueclaw repo is private:
 
 ```bash
 # Copy your public key
-cat ~/.ssh/gcp_openclaw.pub
+cat ~/.ssh/gcp_trueclaw.pub
 
 # Go to GitHub → Settings → SSH Keys → Add New
 ```
@@ -111,17 +93,17 @@ cat ~/.ssh/gcp_openclaw.pub
 
 ```bash
 # If using your own repo
-gh repo create openclaw-infra --private
-cd openclaw-infra
+gh repo create trueclaw-infra --private
+cd trueclaw-infra
 
 # Create the directory structure
-mkdir -p openclaw-gcp
-cd openclaw-gcp
+mkdir -p trueclaw-gcp
+cd trueclaw-gcp
 ```
 
 ### 3.2 Copy the Terraform Files
 
-Create the following files in `openclaw-gcp/`:
+Create the following files in `trueclaw-gcp/`:
 
 - `main.tf`
 - `variables.tf`
@@ -157,7 +139,7 @@ curl -s https://api.ipify.org
 ### 4.1 Initialize Terraform
 
 ```bash
-cd openclaw-gcp
+cd trueclaw-gcp
 terraform init
 ```
 
@@ -193,7 +175,7 @@ instance_ip = "34.123.45.678"
 
 ```bash
 # Using the IP from terraform output
-ssh -i ~/.ssh/gcp_openclaw debian@34.123.45.678
+ssh -i ~/.ssh/gcp_trueclaw debian@34.123.45.678
 ```
 
 > **Note:** The default user is `debian` (not `ec2-user` like AWS)
@@ -220,19 +202,19 @@ sudo journalctl -u google-startup-scripts --no-pager | tail -50
 
 ---
 
-## Step 6: Deploy OpenClaw
+## Step 6: Deploy trueclaw
 
 ### 6.1 Clone Your Repository
 
 ```bash
 # Navigate to app directory
-cd /opt/openclaw
+cd /opt/trueclaw
 
-# Clone your OpenClaw repo
-git clone https://github.com/YOUR_ORG/openclaw.git .
+# Clone your trueclaw repo
+git clone https://github.com/YOUR_ORG/trueclaw.git .
 
 # Or if using SSH
-git clone git@github.com:YOUR_ORG/openclaw.git .
+git clone git@github.com:YOUR_ORG/trueclaw.git .
 ```
 
 ### 6.2 Install Dependencies
@@ -251,7 +233,7 @@ cp .env.example .env
 nano .env
 ```
 
-Common variables for OpenClaw:
+Common variables for trueclaw:
 
 ```bash
 # API Keys (example)
@@ -266,11 +248,11 @@ NODE_ENV=production
 PORT=3000
 ```
 
-### 6.4 Start OpenClaw
+### 6.4 Start trueclaw
 
 ```bash
 # Using PM2 for production
-pm2 start index.js --name openclaw
+pm2 start index.js --name trueclaw
 
 # Save PM2 process list (so it restarts on reboot)
 pm2 save
@@ -284,7 +266,7 @@ pm2 startup
 
 ```bash
 pm2 status
-pm2 logs openclaw
+pm2 logs trueclaw
 ```
 
 ---
@@ -314,27 +296,27 @@ gcloud compute instances list
 ### SSH Into Instance
 
 ```bash
-ssh -i ~/.ssh/gcp_openclaw debian@YOUR_INSTANCE_IP
+ssh -i ~/.ssh/gcp_trueclaw debian@YOUR_INSTANCE_IP
 ```
 
 ### View Logs
 
 ```bash
 # Instance logs
-gcloud compute instances get-serial-port-output openclaw-instance --zone us-central1-a
+gcloud compute instances get-serial-port-output trueclaw-instance --zone us-central1-a
 
 # Application logs (PM2)
-pm2 logs openclaw
+pm2 logs trueclaw
 
 # System logs
 sudo journalctl -u google-startup-scripts --no-pager
 ```
 
-### Restart OpenClaw
+### Restart trueclaw
 
 ```bash
-ssh -i ~/.ssh/gcp_openclaw debian@YOUR_INSTANCE_IP
-pm2 restart openclaw
+ssh -i ~/.ssh/gcp_trueclaw debian@YOUR_INSTANCE_IP
+pm2 restart trueclaw
 ```
 
 ### SSH Shortcut (Optional)
@@ -342,17 +324,17 @@ pm2 restart openclaw
 Add to `~/.ssh/config`:
 
 ```bash
-Host openclaw
+Host trueclaw
     HostName YOUR_INSTANCE_IP
     User debian
-    IdentityFile ~/.ssh/gcp_openclaw
+    IdentityFile ~/.ssh/gcp_trueclaw
     ForwardAgent yes
 ```
 
 Then simply run:
 
 ```bash
-ssh openclaw
+ssh trueclaw
 ```
 
 ---
@@ -386,7 +368,7 @@ terraform apply -var="project=your-project" -verbose
 
 ```bash
 # Check serial port output for errors
-gcloud compute instances get-serial-port-output openclaw-instance --zone us-central1-a
+gcloud compute instances get-serial-port-output trueclaw-instance --zone us-central1-a
 ```
 
 ### Out of Disk Space
@@ -406,14 +388,14 @@ terraform apply -var="disk_size_gb=100"
 ### Destroy All Resources
 
 ```bash
-cd openclaw-gcp
+cd trueclaw-gcp
 terraform destroy
 ```
 
 This terminates the instance and deletes all firewall rules. Your static IP (if reserved) will need to be deleted separately:
 
 ```bash
-gcloud compute addresses delete openclaw-ip --region us-central1
+gcloud compute addresses delete trueclaw-ip --region us-central1
 ```
 
 ---
@@ -434,12 +416,12 @@ resource "google_compute_address" "static_ip" {
 ### Add a Domain with Cloud DNS
 
 ```hcl
-resource "google_dns_record_set" "openclaw" {
-  name = "openclaw.yourdomain.com."
+resource "google_dns_record_set" "trueclaw" {
+  name = "trueclaw.yourdomain.com."
   type = "A"
   ttl  = 300
   zone = google_dns_managed_zone.main.name
-  rrdatas = [google_compute_instance.openclaw.network_interface[0].access_config[0].nat_ip]
+  rrdatas = [google_compute_instance.trueclaw.network_interface[0].access_config[0].nat_ip]
 }
 ```
 
@@ -448,7 +430,7 @@ resource "google_dns_record_set" "openclaw" {
 ```bash
 # On the instance
 sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d openclaw.yourdomain.com
+sudo certbot --nginx -d trueclaw.yourdomain.com
 ```
 
 ### Add Monitoring with Cloud Monitoring
@@ -468,9 +450,9 @@ The Terraform already includes basic monitoring. To view:
 |------|---------|
 | Deploy infrastructure | `terraform apply` |
 | Destroy infrastructure | `terraform destroy` |
-| SSH to instance | `ssh -i ~/.ssh/gcp_openclaw debian@IP` |
-| Restart OpenClaw | `pm2 restart openclaw` |
-| View logs | `pm2 logs openclaw` |
+| SSH to instance | `ssh -i ~/.ssh/gcp_trueclaw debian@IP` |
+| Restart trueclaw | `pm2 restart trueclaw` |
+| View logs | `pm2 logs trueclaw` |
 | Check instance | `gcloud compute instances list` |
 
 ---
@@ -479,4 +461,4 @@ The Terraform already includes basic monitoring. To view:
 
 - **GCP Docs**: [cloud.google.com/compute/docs](https://cloud.google.com/compute/docs)
 - **Terraform GCP Provider**: [registry.terraform.io/providers/hashicorp/google](https://registry.terraform.io/providers/hashicorp/google)
-- **OpenClaw Repo**: [github.com/openclaw](https://github.com/openclaw)
+- **trueclaw Repo**: [github.com/trueclaw](https://github.com/trueclaw)

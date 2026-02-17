@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "🚀 Starting OpenClaw bootstrap..."
+echo "🚀 Starting trueclaw bootstrap..."
 
 # Update system
 dnf update -y
@@ -43,11 +43,11 @@ chmod +x /usr/local/bin/docker-compose
 dnf install -y python3 python3-pip
 
 # Create application directory
-mkdir -p /opt/openclaw
-cd /opt/openclaw
+mkdir -p /opt/trueclaw
+cd /opt/trueclaw
 
 # If you have your repo, uncomment:
-# git clone https://github.com/your-org/openclaw.git .
+# git clone https://github.com/your-org/trueclaw.git .
 
 echo "✅ Bootstrap complete!"
 echo "   Node: $(node --version)"
@@ -55,8 +55,8 @@ echo "   NPM: $(npm --version)"
 echo "   PM2: $(pm2 --version)"
 echo "   Docker: $(docker --version)"
 echo ""
-echo "   To start OpenClaw:"
-echo "   cd /opt/openclaw"
+echo "   To start trueclaw:"
+echo "   cd /opt/trueclaw"
 echo "   npm install"
 echo "   pm2 start index.js"
 
