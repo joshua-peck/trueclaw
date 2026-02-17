@@ -8,6 +8,11 @@ apt-get update
 
 apt install build-essential g++ clang cmake -y
 
+echo "You may need to disable GPUs for cloud servers without paying $$$$$$..."
+echo "$ export NODE_LLAMA_CPP_FORCE_CPU=true"
+echo "$ curl -fsSL https://openclaw.ai/install-cli.sh | bash"
+
+
 # # Install common tools
 # dnf install -y \
 #   git \
