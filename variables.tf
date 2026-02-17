@@ -17,9 +17,10 @@ variable "zone" {
 }
 
 variable "instance_type" {
-  description = "GCP machine type (e3 family)"
+  description = "GCP machine type (g2 family)"
   type        = string
-  default     = "e2-standard-4"  # 4 vCPU / 16 GB setup
+  default     = "g2-standard-4"  # 4 vCPU / 1x GPU /16 GB setup
+  # default     = "e2-standard-4"  # 4 vCPU / 16 GB setup
 }
 
 variable "project_name" {

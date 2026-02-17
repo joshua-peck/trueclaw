@@ -117,6 +117,11 @@ resource "google_compute_instance" "trueclaw" {
   name         = "${var.project_name}-instance"
   machine_type = var.instance_type
   zone         = var.zone
+  allow_stopping_for_update = true
+
+  scheduling {
+    on_host_maintenance = "TERMINATE"
+  }
 
   tags = ["trueclaw"]
 
@@ -146,8 +151,9 @@ resource "google_compute_instance" "trueclaw" {
 
   metadata = {
     startup-script = file("${path.module}/startup.sh")
-    # Add SSH keys like this:
-    # ssh-keys = "username:ssh-ed25519 AAAA..."
+    ssh-keys       = <<-EOT
+      debian:ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILlBLFpZUEcjbWjjXK+pntMYabxNCE1fYDSzD8cTnaoz trueclaw@gcp
+    EOT
     }
 
   labels = {
