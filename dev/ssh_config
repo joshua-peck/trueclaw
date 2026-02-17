@@ -1,0 +1,5 @@
+Host 34.70.121.25
+    HostName 34.70.121.25
+    User debian
+    IdentityFile ~/.ssh/gcp_trueclaw
+    #IdentitiesOnly yes

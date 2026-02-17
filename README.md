@@ -183,7 +183,15 @@ instance_ip = "34.123.45.678"
 
 ## Step 5: Connect to Your Instance
 
-### 5.1 SSH Into the Instance
+### 5.1 Add SSH Key to Instance
+
+```bash
+gcloud compute instances add-metadata trueclaw-instance \
+  --zone=us-central1-a \
+  --metadata-from-file ssh-keys=<(echo "debian:$(cat ~/.ssh/gcp_trueclaw.pub)")
+```
+
+### 5.2 SSH Into the Instance
 
 ```bash
 # Using the IP from terraform output
@@ -192,7 +200,7 @@ ssh -i ~/.ssh/gcp_trueclaw debian@34.123.45.678
 
 > **Note:** The default user is `debian` (not `ec2-user` like AWS)
 
-### 5.2 Verify the Setup
+### 5.3 Verify the Setup
 
 ```bash
 # Check Node.js
