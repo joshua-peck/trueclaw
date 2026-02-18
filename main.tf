@@ -127,11 +127,26 @@ resource "google_compute_instance" "trueclaw" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-11"  # Or "centos-stream-9", "ubuntu-2204-lts"
-      size  = var.disk_size_gb
-      type  = "pd-ssd"  # SSD for better I/O
+      # Option A: The "Base" image (Drivers + CUDA only)
+      image = "projects/deeplearning-platform-release/global/images/family/common-cu128-ubuntu-2204-nvidia-570"
+      
+      # Option B: PyTorch Pre-installed
+      # image = "projects/deeplearning-platform-release/global/images/family/pytorch-2-1-cu121-debian-12"
+      
+      # Option C: TensorFlow Pre-installed
+      # image = "projects/deeplearning-platform-release/global/images/family/tf-2-15-cu122-debian-12"
+      
+      size = 100 # Recommend at least 100GB for DL images
     }
   }
+
+  # boot_disk {
+  #   initialize_params {
+  #     image = "debian-cloud/debian-12"  # Or "centos-stream-9", "ubuntu-2204-lts"
+  #     size  = var.disk_size_gb
+  #     type  = "pd-ssd"  # SSD for better I/O
+  #   }
+  # }
 
   network_interface {
     network = data.google_compute_network.default.name
