@@ -140,14 +140,6 @@ resource "google_compute_instance" "trueclaw" {
     }
   }
 
-  # boot_disk {
-  #   initialize_params {
-  #     image = "debian-cloud/debian-12"  # Or "centos-stream-9", "ubuntu-2204-lts"
-  #     size  = var.disk_size_gb
-  #     type  = "pd-ssd"  # SSD for better I/O
-  #   }
-  # }
-
   network_interface {
     network = data.google_compute_network.default.name
     access_config {
