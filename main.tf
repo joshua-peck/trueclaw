@@ -111,6 +111,14 @@ resource "google_project_iam_member" "sa_monitoring" {
 }
 
 # -------------------
+# Static IP for the Instance
+# -------------------
+resource "google_compute_address" "trueclaw_static_ip" {
+  name   = "${var.project_name}-static-ip"
+  region = var.region
+}
+
+# -------------------
 # Compute Engine Instance
 # -------------------
 resource "google_compute_instance" "trueclaw" {
@@ -140,10 +148,16 @@ resource "google_compute_instance" "trueclaw" {
     }
   }
 
+  # network_interface {
+  #   network = data.google_compute_network.default.name
+  #   access_config {
+  #     // This adds a public IP (ephemeral)
+  #   }
+  # }
   network_interface {
     network = data.google_compute_network.default.name
     access_config {
-      // This adds a public IP (ephemeral)
+      nat_ip = google_compute_address.trueclaw_static_ip.address
     }
   }
 
