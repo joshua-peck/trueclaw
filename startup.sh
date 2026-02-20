@@ -8,7 +8,7 @@ apt-get update
 
 # set up GPU connections
 apt upgrade -y
-apt install -y build-essential dkms linux-headers-$(uname -r)
+apt install -y build-essential net-tools dkms linux-headers-$(uname -r)
 apt install firmware-misc-nonfree nvidia-driver -y
 apt update
 sed -i '/^Components:/ s/$/ contrib non-free-firmware non-free/' /etc/apt/sources.list.d/debian.sources
